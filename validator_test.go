@@ -44,19 +44,20 @@ func TestIsExistingEmail(t *testing.T) {
 		expected bool
 	}{
 		{"", false},
+		{"invalid.com", false},
+		{"@invalid.com", false},
+		{"invalidemail@", false},
+		{"foo@bar.coffee..coffee", false},
+		{"[prasun.joshi]@DomaIn.cOM", false},
+		{"nosuchdomain@bar.nosuchdomainsuffix", false},
+		{"sizeofuserismorethansixtyfour0123sizeofuserismorethansixtyfour0123@DOMAIN.CO.UK", false},
+
 		{"foo@bar.com", true},
 		{"foo@bar.com.au", true},
 		{"foo+bar@bar.com", true},
-		{"foo@bar.coffee..coffee", false},
-		{"invalidemail@", false},
-		{"invalid.com", false},
-		{"@invalid.com", false},
+		{"prasun.joshi@localhost", true},
 		{"NathAn.daVIeS@DomaIn.cOM", true},
 		{"NATHAN.DAVIES@DOMAIN.CO.UK", true},
-		{"prasun.joshi@localhost", true},
-		{"[prasun.joshi]@DomaIn.cOM", false},
-		{"sizeofuserismorethansixtyfour0123sizeofuserismorethansixtyfour0123@DOMAIN.CO.UK", false},
-		{"nosuchdomain@bar.nosuchdomainsuffix", false},
 	}
 	for _, test := range tests {
 		actual := IsExistingEmail(test.param)

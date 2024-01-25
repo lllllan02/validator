@@ -1,7 +1,6 @@
 package validator
 
 import (
-	"fmt"
 	"net"
 	"net/url"
 	"strings"
@@ -32,7 +31,6 @@ func IsExistingEmail(email string) bool {
 		return true
 	}
 	if userDotRegexp.MatchString(user) || !userRegexp.MatchString(user) || !hostRegexp.MatchString(host) {
-		fmt.Println(host)
 		return false
 	}
 
