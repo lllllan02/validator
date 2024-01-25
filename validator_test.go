@@ -2,6 +2,128 @@ package validator
 
 import "testing"
 
+func TestIsAlpha(t *testing.T) {
+	t.Parallel()
+
+	var tests = []struct {
+		param    string
+		expected bool
+	}{
+		{"Ⅸ", false},
+		{"0", false},
+		{" ", false},
+		{".", false},
+		{"-", false},
+		{"+", false},
+		{"\n", false},
+		{"\r", false},
+		{"소", false},
+		{"-0", false},
+		{"++", false},
+		{"+1", false},
+		{"--", false},
+		{"1¾", false},
+		{"123", false},
+		{"-1¾", false},
+		{"1++", false},
+		{"1+1", false},
+		{"1--", false},
+		{"1-1", false},
+		{"〥〩", false},
+		{"모자", false},
+		{"0123", false},
+		{"abc1", false},
+		{"소주", false},
+		{"۳۵۶۰", false},
+		{"abc〩", false},
+		{"소aBC", false},
+		{"\u0026", false}, // UTF-8(ASCII): &
+		{"\u0030", false}, // UTF-8(ASCII): 0
+		{"-00123", false},
+		{"\ufff0", false},
+		{"abc!!!", false},
+		{"〩Hours", false},
+		{"123.123", false},
+		{"달기&Co.", false},
+		{"   fooo   ", false},
+
+		{"", true},
+		{"ix", true},
+		{"abc", true},
+		{"ABC", true},
+		{"FoObAr", true},
+		{"\u0070", true}, // UTF-8(ASCII): p
+	}
+	for _, test := range tests {
+		actual := IsAlpha(test.param)
+		if actual != test.expected {
+			t.Errorf("Expected IsAlpha(%q) to be %v, got %v", test.param, test.expected, actual)
+		}
+	}
+}
+
+func TestIsAlphanumeric(t *testing.T) {
+	t.Parallel()
+
+	var tests = []struct {
+		param    string
+		expected bool
+	}{
+		{"Ⅸ", false},
+		{" ", false},
+		{".", false},
+		{"-", false},
+		{"+", false},
+		{"\n", false},
+		{"\r", false},
+		{"--", false},
+		{"++", false},
+		{"+1", false},
+		{"1¾", false},
+		{"소", false},
+		{"-0", false},
+		{"1++", false},
+		{"1+1", false},
+		{"1--", false},
+		{"1-1", false},
+		{"-1¾", false},
+		{"〥〩", false},
+		{"모자", false},
+		{"소aBC", false},
+		{"۳۵۶۰", false},
+		{"abc〩", false},
+		{"abc!!!", false},
+		{"-00123", false},
+		{"\ufff0", false},
+		{"\u0026", false}, // UTF-8(ASCII): &
+		{"123.123", false},
+		{"〩Hours", false},
+		{"달기&Co.", false},
+		{"   fooo   ", false},
+
+		{"", true},
+		{"0", true},
+		{"ix", true},
+		{"abc", true},
+		{"123", true},
+		{"ABC", true},
+		{"0123", true},
+		{"abc1", true},
+		{"소주", false},
+		{"FoObAr", true},
+		{"abc123", true},
+		{"ABC111", true},
+		{"\u0070", true}, // UTF-8(ASCII): p
+		{"\u0030", true}, // UTF-8(ASCII): 0
+	}
+	for _, test := range tests {
+		actual := IsAlphanumeric(test.param)
+		if actual != test.expected {
+			t.Errorf("Expected IsAlphanumeric(%q) to be %v, got %v", test.param, test.expected, actual)
+		}
+	}
+}
+
 func TestIsEmail(t *testing.T) {
 	t.Parallel()
 
@@ -63,6 +185,105 @@ func TestIsExistingEmail(t *testing.T) {
 		actual := IsExistingEmail(test.param)
 		if actual != test.expected {
 			t.Errorf("Expected IsExistingEmail(%q) to be %v, got %v", test.param, test.expected, actual)
+		}
+	}
+}
+
+func TestIsNull(t *testing.T) {
+	t.Parallel()
+
+	var tests = []struct {
+		param    string
+		expected bool
+	}{
+		{"abacaba", false},
+		{"", true},
+	}
+	for _, test := range tests {
+		actual := IsNull(test.param)
+		if actual != test.expected {
+			t.Errorf("Expected IsNull(%q) to be %v, got %v", test.param, test.expected, actual)
+		}
+	}
+}
+
+func TestIsNotNull(t *testing.T) {
+	t.Parallel()
+
+	var tests = []struct {
+		param    string
+		expected bool
+	}{
+		{"", false},
+		{"abacaba", true},
+	}
+	for _, test := range tests {
+		actual := IsNotNull(test.param)
+		if actual != test.expected {
+			t.Errorf("Expected IsNull(%q) to be %v, got %v", test.param, test.expected, actual)
+		}
+	}
+}
+
+func TestIsNumeric(t *testing.T) {
+	t.Parallel()
+
+	var tests = []struct {
+		param    string
+		expected bool
+	}{
+
+		{" ", false},
+		{"Ⅸ", false},
+		{".", false},
+		{"-", false},
+		{"+", false},
+		{"\n", false},
+		{"\r", false},
+		{"소", false},
+		{"1¾", false},
+		{"--", false},
+		{"++", false},
+		{"+1", false},
+		{"ix", false},
+		{"-0", false},
+		{"ABC", false},
+		{"1--", false},
+		{"1-1", false},
+		{"1++", false},
+		{"-1¾", false},
+		{"1+1", false},
+		{"abc", false},
+		{"abc1", false},
+		{"소주", false},
+		{"〥〩", false},
+		{"모자", false},
+		{"12𐅪3", false},
+		{"۳۵۶۰", false},
+		{"소aBC", false},
+		{"abc〩", false},
+		{"abc!!!", false},
+		{"FoObAr", false},
+		{"\ufff0", false},
+		{"-00123", false},
+		{"+00123", false},
+		{"\u0070", false}, // UTF-8(ASCII): p
+		{"\u0026", false}, // UTF-8(ASCII): &
+		{"123.123", false},
+		{"〩Hours", false},
+		{"달기&Co.", false},
+		{"   fooo   ", false},
+
+		{"", true},
+		{"0", true},
+		{"123", true},
+		{"0123", true},
+		{"\u0030", true}, // UTF-8(ASCII): 0
+	}
+	for _, test := range tests {
+		actual := IsNumeric(test.param)
+		if actual != test.expected {
+			t.Errorf("Expected IsNumeric(%q) to be %v, got %v", test.param, test.expected, actual)
 		}
 	}
 }
@@ -266,6 +487,248 @@ func TestIsRequestURI(t *testing.T) {
 		actual := IsRequestURI(test.param)
 		if actual != test.expected {
 			t.Errorf("Expected IsRequestURI(%q) to be %v, got %v", test.param, test.expected, actual)
+		}
+	}
+}
+
+func TestIsUTFDigit(t *testing.T) {
+	t.Parallel()
+
+	var tests = []struct {
+		param    string
+		expected bool
+	}{
+		{"+", false},
+		{" ", false},
+		{".", false},
+		{"Ⅸ", false},
+		{"\n", false},
+		{"\r", false},
+		{"++", false},
+		{"1¾", false},
+		{"ix", false},
+		{"소", false},
+		{"--0", false},
+		{"-0-", false},
+		{"1++", false},
+		{"1+1", false},
+		{"-1¾", false},
+		{"ABC", false},
+		{"abc", false},
+		{"abc1", false},
+		{"소주", false},
+		{"〥〩", false},
+		{"모자", false},
+		{"12𐅪3", false},
+		{"abc〩", false},
+		{"소aBC", false},
+		{"abc!!!", false},
+		{"FoObAr", false},
+		{"\ufff0", false},
+		{"\u0070", false}, // UTF-8(ASCII): p
+		{"\u0026", false}, // UTF-8(ASCII): &
+		{"123.123", false},
+		{"〩Hours", false},
+		{"달기&Co.", false},
+		{"   fooo   ", false},
+
+		{"", true},
+		{"0", true},
+		{"-0", true},
+		{"+1", true},
+		{"-29", true},
+		{"123", true},
+		{"0123", true},
+		{"۳۵۶۰", true},
+		{"۳۵۶۰", true},
+		{"-00123", true},
+		{"\u0030", true}, // UTF-8(ASCII): 0
+		{"1483920", true},
+	}
+	for _, test := range tests {
+		actual := IsUTFDigit(test.param)
+		if actual != test.expected {
+			t.Errorf("Expected IsUTFDigit(%q) to be %v, got %v", test.param, test.expected, actual)
+		}
+	}
+}
+
+func TestIsUTFLetter(t *testing.T) {
+	t.Parallel()
+
+	var tests = []struct {
+		param    string
+		expected bool
+	}{
+		{"Ⅸ", false},
+		{"0", false},
+		{" ", false},
+		{".", false},
+		{"-", false},
+		{"+", false},
+		{"\n", false},
+		{"\r", false},
+		{"-0", false},
+		{"1¾", false},
+		{"--", false},
+		{"++", false},
+		{"+1", false},
+		{"-1¾", false},
+		{"1--", false},
+		{"1-1", false},
+		{"1++", false},
+		{"1+1", false},
+		{"123", false},
+		{"〥〩", false},
+		{"0123", false},
+		{"abc1", false},
+		{"abc〩", false},
+		{"۳۵۶۰", false},
+		{"abc!!!", false},
+		{"\ufff0", false},
+		{"-00123", false},
+		{"\u0026", false}, // UTF-8(ASCII): &
+		{"\u0030", false}, // UTF-8(ASCII): 0
+		{"〩Hours", false},
+		{"123.123", false},
+		{"달기&Co.", false},
+		{"   fooo   ", false},
+
+		{"", true},
+		{"소", true},
+		{"ix", true},
+		{"abc", true},
+		{"ABC", true},
+		{"모자", true},
+		{"소주", true},
+		{"소aBC", true},
+		{"FoObAr", true},
+		{"\u0070", true}, // UTF-8(ASCII): p
+	}
+	for _, test := range tests {
+		actual := IsUTFLetter(test.param)
+		if actual != test.expected {
+			t.Errorf("Expected IsUTFLetter(%q) to be %v, got %v", test.param, test.expected, actual)
+		}
+	}
+}
+
+func TestIsUTFLetterNumeric(t *testing.T) {
+	t.Parallel()
+
+	var tests = []struct {
+		param    string
+		expected bool
+	}{
+		{" ", false},
+		{".", false},
+		{"-", false},
+		{"+", false},
+		{"\n", false},
+		{"\r", false},
+		{"-0", false},
+		{"--", false},
+		{"++", false},
+		{"+1", false},
+		{"-1¾", false},
+		{"1--", false},
+		{"1-1", false},
+		{"1++", false},
+		{"1+1", false},
+		{"abc!!!", false},
+		{"\ufff0", false},
+		{"-00123", false},
+		{"\u0026", false}, // UTF-8(ASCII): &
+		{"123.123", false},
+		{"달기&Co.", false},
+		{"   fooo   ", false},
+
+		{"", true},
+		{"Ⅸ", true},
+		{"0", true},
+		{"1¾", true},
+		{"소", true},
+		{"ix", true},
+		{"123", true},
+		{"abc", true},
+		{"ABC", true},
+		{"〥〩", true},
+		{"모자", true},
+		{"소주", true},
+		{"0123", true},
+		{"abc1", true},
+		{"۳۵۶۰", true},
+		{"abc〩", true},
+		{"소aBC", true},
+		{"FoObAr", true},
+		{"\u0070", true}, // UTF-8(ASCII): p
+		{"\u0030", true}, // UTF-8(ASCII): 0
+		{"〩Hours", true},
+	}
+	for _, test := range tests {
+		actual := IsUTFLetterNumeric(test.param)
+		if actual != test.expected {
+			t.Errorf("Expected IsUTFLetterNumeric(%q) to be %v, got %v", test.param, test.expected, actual)
+		}
+	}
+}
+
+func TestIsUTFNumeric(t *testing.T) {
+	t.Parallel()
+
+	var tests = []struct {
+		param    string
+		expected bool
+	}{
+
+		{"+", false},
+		{" ", false},
+		{".", false},
+		{"소", false},
+		{"ix", false},
+		{"++", false},
+		{"\n", false},
+		{"\r", false},
+		{"1++", false},
+		{"1+1", false},
+		{"--0", false},
+		{"-0-", false},
+		{"abc", false},
+		{"ABC", false},
+		{"모자", false},
+		{"abc1", false},
+		{"소주", false},
+		{"abc〩", false},
+		{"소aBC", false},
+		{"abc!!!", false},
+		{"FoObAr", false},
+		{"\ufff0", false},
+		{"\u0070", false}, // UTF-8(ASCII): p
+		{"\u0026", false}, // UTF-8(ASCII): &
+		{"123.123", false},
+		{"〩Hours", false},
+		{"달기&Co.", false},
+		{"   fooo   ", false},
+
+		{"", true},
+		{"Ⅸ", true},
+		{"0", true},
+		{"-0", true},
+		{"+1", true},
+		{"1¾", true},
+		{"-1¾", true},
+		{"123", true},
+		{"0123", true},
+		{"〥〩", true},
+		{"12𐅪3", true},
+		{"۳۵۶۰", true},
+		{"-00123", true},
+		{"\u0030", true}, // UTF-8(ASCII): 0
+	}
+	for _, test := range tests {
+		actual := IsUTFNumeric(test.param)
+		if actual != test.expected {
+			t.Errorf("Expected IsUTFNumeric(%q) to be %v, got %v", test.param, test.expected, actual)
 		}
 	}
 }

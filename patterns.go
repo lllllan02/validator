@@ -66,10 +66,13 @@ const (
 )
 
 var (
-	emailRegexp   = regexp.MustCompile(Email)
-	urlRegexp     = regexp.MustCompile(URL)
-	userDotRegexp = regexp.MustCompile("(^[.]{1})|([.]{1}$)|([.]{2,})")
-	userRegexp    = regexp.MustCompile("^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~.-]+$")
+	alphaRegexp        = regexp.MustCompile(Alpha)
+	alphanumericRegexp = regexp.MustCompile(Alphanumeric)
+	emailRegexp        = regexp.MustCompile(Email)
+	numericRegexp      = regexp.MustCompile(Numeric)
+	urlRegexp          = regexp.MustCompile(URL)
+	userDotRegexp      = regexp.MustCompile("(^[.]{1})|([.]{1}$)|([.]{2,})")
+	userRegexp         = regexp.MustCompile("^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~.-]+$")
 
 	hostRegexp          = regexp.MustCompile("^[^\\s]+\\.[^\\s]+$")
 	rxCreditCard        = regexp.MustCompile(CreditCard)
@@ -79,9 +82,6 @@ var (
 	rxUUID4             = regexp.MustCompile(UUID4)
 	rxUUID5             = regexp.MustCompile(UUID5)
 	rxUUID              = regexp.MustCompile(UUID)
-	rxAlpha             = regexp.MustCompile(Alpha)
-	rxAlphanumeric      = regexp.MustCompile(Alphanumeric)
-	rxNumeric           = regexp.MustCompile(Numeric)
 	rxInt               = regexp.MustCompile(Int)
 	rxFloat             = regexp.MustCompile(Float)
 	rxHexadecimal       = regexp.MustCompile(Hexadecimal)

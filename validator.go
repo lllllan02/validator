@@ -4,8 +4,27 @@ import (
 	"net"
 	"net/url"
 	"strings"
+	"unicode"
 	"unicode/utf8"
 )
+
+// IsAlpha checks if the string contains only letters (a-zA-Z). Empty string is valid.
+func IsAlpha(str string) bool {
+	if IsNull(str) {
+		return true
+	}
+
+	return alphaRegexp.MatchString(str)
+}
+
+// IsAlphanumeric checks if the string contains only letters and numbers. Empty string is valid.
+func IsAlphanumeric(str string) bool {
+	if IsNull(str) {
+		return true
+	}
+
+	return alphanumericRegexp.MatchString(str)
+}
 
 // IsEmail checks if the string is an email.
 func IsEmail(str string) bool {
@@ -41,6 +60,25 @@ func IsExistingEmail(email string) bool {
 	}
 
 	return true
+}
+
+// IsNull checks if the string is null.
+func IsNull(str string) bool {
+	return len(str) == 0
+}
+
+// IsNotNull checks if the string is not null.
+func IsNotNull(str string) bool {
+	return !IsNull(str)
+}
+
+// IsNumeric checks if the string contains only numbers. Empty string is valid.
+func IsNumeric(str string) bool {
+	if IsNull(str) {
+		return true
+	}
+
+	return numericRegexp.MatchString(str)
 }
 
 const maxURLRuneCount = 2083
@@ -93,4 +131,82 @@ func IsRequestURL(rawurl string) bool {
 func IsRequestURI(rawurl string) bool {
 	_, err := url.ParseRequestURI(rawurl)
 	return err == nil
+}
+
+// IsUTFDigit checks if the string contains only unicode radix-10 decimal digits. Empty string is valid.
+func IsUTFDigit(str string) bool {
+	if IsNull(str) {
+		return true
+	}
+
+	if strings.IndexAny(str, "+-") > 0 {
+		return false
+	}
+
+	if len(str) > 1 {
+		str = strings.TrimPrefix(str, "-")
+		str = strings.TrimPrefix(str, "+")
+	}
+	for _, c := range str {
+		if !unicode.IsDigit(c) { // digits && minus sign are ok
+			return false
+		}
+	}
+
+	return true
+}
+
+// IsUTFLetter checks if the string contains only unicode letter characters.
+// Similar to IsAlpha but for all languages. Empty string is valid.
+func IsUTFLetter(str string) bool {
+	if IsNull(str) {
+		return true
+	}
+
+	for _, c := range str {
+		if !unicode.IsLetter(c) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// IsUTFLetterNumeric checks if the string contains only unicode letters and numbers. Empty string is valid.
+func IsUTFLetterNumeric(str string) bool {
+	if IsNull(str) {
+		return true
+	}
+
+	for _, c := range str {
+		if !unicode.IsLetter(c) && !unicode.IsNumber(c) { // letters && numbers are ok
+			return false
+		}
+	}
+
+	return true
+}
+
+// IsUTFNumeric checks if the string contains only unicode numbers of any kind.
+// Numbers can be 0-9 but also Fractions ¾,Roman Ⅸ and Hangzhou 〩. Empty string is valid.
+func IsUTFNumeric(str string) bool {
+	if IsNull(str) {
+		return true
+	}
+
+	if strings.IndexAny(str, "+-") > 0 {
+		return false
+	}
+
+	if len(str) > 1 {
+		str = strings.TrimPrefix(str, "-")
+		str = strings.TrimPrefix(str, "+")
+	}
+	for _, c := range str {
+		if !unicode.IsNumber(c) { // numbers && minus sign are ok
+			return false
+		}
+	}
+
+	return true
 }
